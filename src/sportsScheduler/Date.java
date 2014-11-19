@@ -24,10 +24,10 @@ public class Date {
 		this.day = Integer.parseInt(dateParts[1]);
 		int yr = Integer.parseInt(dateParts[2]);
 		if(yr < 100){
-			this.year = yr + 2000;
+		  this.year = yr + 2000;
 		}
 		else{
-			this.year = yr;
+		  this.year = yr;
 		}
 	}
 	

@@ -1,6 +1,9 @@
 package sportsScheduler;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Team {
 	
@@ -39,8 +42,16 @@ public class Team {
 	}
 	
 	//inits all things for team from file
-	public Team(String filePath){
-		//inits from a file 
+	public Team(String filePath) throws FileNotFoundException{
+	    Scanner sc = new Scanner(new File(filePath));
+	    this.name = sc.nextLine();
+	    this.acronym = sc.nextLine();
+	    String restrictionsString = sc.nextLine();
+	    String[] restrictionCodes = restrictionsString.split("-");
+	    this.restrictions = new int[restrictionCodes.length];
+	    for(int i = 0; i < restrictionCodes.length; i++){
+	      this.restrictions[i] = Integer.parseInt(restrictionCodes[i]);
+	    }
 	}
 	
 	public void setRestrictions(int[] restrict){
@@ -53,6 +64,11 @@ public class Team {
 		
 		//Will read through the gamesList in the conference class
 		//and find games involving the team and categorize them appropriately
+	}
+	
+	public String toString(){
+	  return this.acronym + " - " + this.name;
+	  
 	}
 	
 	

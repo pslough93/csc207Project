@@ -1,0 +1,22 @@
+Beloit College
+BC
+Carroll University
+CU
+Cornell College
+CC
+Grinnell College
+GC
+Illinois College
+IC
+Knox College
+KC
+Lake Forest College
+LFC
+Lawrence University
+LU
+Monmouth College
+MC
+Ripon College
+RC
+St. Norbert College
+SNC
