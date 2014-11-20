@@ -1,22 +1,30 @@
 Beloit College
 BC
-Carroll University
-CU
+1-1-1-1-1-1-1-1-1-1-1
 Cornell College
 CC
+2-2-2-2-2-2-2-2-2-2-2
 Grinnell College
 GC
+3-3-3-3-3-3-3-3-3-3-3
 Illinois College
 IC
+4-4-4-4-4-4-4-4-4-4-4
 Knox College
 KC
+5-5-5-5-5-5-5-5-5-5-5
 Lake Forest College
 LFC
+6-6-6-6-6-6-6-6-6-6-6
 Lawrence University
 LU
+7-7-7-7-7-7-7-7-7-7-7
 Monmouth College
 MC
+8-8-8-8-8-8-8-8-8-8-8
 Ripon College
 RC
+9-9-9-9-9-9-9-9-9-9-9
 St. Norbert College
 SNC
+0-0-0-0-0-0-0-0-0-0-0

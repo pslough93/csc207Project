@@ -1,5 +1,10 @@
 package sportsScheduler;
 
+/**
+ * A class for games with a mileage parameter
+ * @author Patrick Slough, Noah Schlager, Samee Zahid
+ *
+ */
 public class GameWithMileage extends Game {
 	
 	//distance away team must travel

@@ -18,14 +18,18 @@ public class Expt
     System.out.println();
     */
     
-    Conference mwc = new Conference("mwc.txt", "dates.txt", 11, 19);
+    Conference mwc = new Conference("mwc.txt", "dates.txt", 10, 19);
     
-    /*for(int i = 0; i < mwc.teams.length; i++){
+    for(int i = 0; i < mwc.teams.length; i++){
       System.out.println(mwc.teams[i].toString());
+      for(int j = 0; j < mwc.teams[i].restrictions.length; j++){
+        System.out.print(mwc.teams[i].restrictions[j] + " ");
+      }
+      System.out.println();
     }
     for(int j = 0; j < mwc.datesOfCompetition.length; j++){
       System.out.println(mwc.datesOfCompetition[j].toString());
-    }*/
+    }
     
     mwc.readMileage("milage.txt");
     for(int i = 0; i < mwc.teams.length; i++){
