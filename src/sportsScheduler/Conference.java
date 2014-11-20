@@ -27,7 +27,7 @@ public class Conference
   public Conference(Team[] teams, Date[] dates)
   {
     //initialize a conference from arrays
-  }
+  }//Conference
 
   /**
    * Initializes a conference from file inputs and integers for teams and dates
@@ -69,8 +69,8 @@ public class Conference
           {
             this.teams[i].restrictions[j] =
                 Integer.parseInt(restrictionCodes[i]);
-          }
-      }
+          }//for j
+      }//for i
     
     //create a scanner to read dates
     Scanner sc2 = new Scanner(new File(dateData));
@@ -79,7 +79,7 @@ public class Conference
       {
         String dateString = sc2.nextLine();
         this.datesOfCompetition[j] = new Date(dateString);
-      }
+      }//for j
   }
   
   /**
@@ -107,14 +107,14 @@ public class Conference
         for (int j = 0; j < teamCount; j++)
           {
             this.mileage[i][j] = sc.nextInt();
-          }
-      }
-  }
+          }//for j
+      }//for i
+  }// readMileage(String mileData)
 
   public void generateGamesList()
   {
     //generates all games that should be played and 
     //puts them in gamesList
-  }
+  }//generateGamesList()
 
 }
