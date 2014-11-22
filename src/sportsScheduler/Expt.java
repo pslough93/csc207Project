@@ -38,6 +38,34 @@ public class Expt
       }
       System.out.println();
     }
+    
+    mwc.generateGamesLists();
+    
+    //GameWithMileage game = new GameWithMileage(mwc.teams[0], mwc.teams[0], mwc.mileage[0][0]);
+    
+    //System.out.println(game.toString() + " " + game.mileage);
+    
+    for(int i = 0; i < mwc.teams.length; i++){
+      System.out.println(mwc.teams[i].name + ":");
+      System.out.print("Home Games: ");
+      for(Game g: mwc.teams[i].homeGames){
+        System.out.print(g.awayTeam.name + " - ");
+      }
+      System.out.println();
+      
+      System.out.print("Close Away Games: ");
+      for(Game g: mwc.teams[i].closeAwayGames){
+        System.out.print(g.homeTeam.name + " - ");
+      }
+      System.out.println();
+      
+      System.out.print("Far Away Games: ");
+      for(Game g: mwc.teams[i].farAwayGames){
+        System.out.print(g.homeTeam.name + " - ");
+      }
+      System.out.println();
+    }
+    
   }
 
 }

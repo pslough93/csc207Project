@@ -48,6 +48,11 @@ public class Team
   {
     this.name = teamName;
     this.acronym = ac;
+    
+    this.homeGames = new ArrayList<Game>();
+    this.closeAwayGames = new ArrayList<Game>();
+    this.farAwayGames = new ArrayList<Game>();
+
   }
 
   //inits all things for team from file
@@ -71,6 +76,10 @@ public class Team
       {
         this.restrictions[i] = Integer.parseInt(restrictionCodes[i]);
       }
+    
+    this.homeGames = new ArrayList<Game>();
+    this.closeAwayGames = new ArrayList<Game>();
+    this.farAwayGames = new ArrayList<Game>();
   }
 
   public void setRestrictions(int[] restrict)
@@ -93,4 +102,7 @@ public class Team
     return this.acronym + " - " + this.name;
   }
 
+  public boolean equals(Team t2){
+    return this.name.equals(t2.name);
+  }
 }

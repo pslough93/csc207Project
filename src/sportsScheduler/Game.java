@@ -19,7 +19,14 @@ public class Game
 
   public String toString()
   {
-    String returnString = this.awayTeam.name + " at " + this.homeTeam.name;
-    return returnString;
+    if (this.homeTeam.equals(this.awayTeam))
+      {
+        return this.homeTeam.name + " - BYE";
+      }
+    else
+      {
+        String returnString = this.awayTeam.name + " at " + this.homeTeam.name;
+        return returnString;
+      }
   }
 }
