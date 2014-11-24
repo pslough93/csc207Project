@@ -117,7 +117,7 @@ public class Conference
   {
     for(int i = 0; i < this.teams.length; i++){
       GameWithMileage bye = new GameWithMileage(this.teams[i], this.teams[i], 0);
-      this.teams[i].homeGames.add(bye);
+      this.teams[i].byes.add(bye);
       this.gamesList.add(bye); //bye game
       for(int j = i + 1; j < this.teams.length; j++){
         GameWithMileage homeAgainstJ = new GameWithMileage(this.teams[i], this.teams[j], this.mileage[i][j]);

@@ -34,6 +34,7 @@ public class Team
   //schedule games from lastYear;
   //Game[] lastYear;
 
+  
   //List of home games to be played by the team
   ArrayList<Game> homeGames;
 
@@ -42,6 +43,8 @@ public class Team
 
   //List of far away games to be played
   ArrayList<Game> farAwayGames;
+  
+  ArrayList<Game> byes;
 
   //inits just name of team and acronym
   public Team(String teamName, String ac)
@@ -52,6 +55,7 @@ public class Team
     this.homeGames = new ArrayList<Game>();
     this.closeAwayGames = new ArrayList<Game>();
     this.farAwayGames = new ArrayList<Game>();
+    this.byes = new ArrayList<Game>();
 
   }
 
@@ -80,6 +84,7 @@ public class Team
     this.homeGames = new ArrayList<Game>();
     this.closeAwayGames = new ArrayList<Game>();
     this.farAwayGames = new ArrayList<Game>();
+    this.byes = new ArrayList<Game>();
   }
 
   public void setRestrictions(int[] restrict)
