@@ -1,5 +1,6 @@
 package sportsScheduler;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Schedule
@@ -11,13 +12,15 @@ public class Schedule
 
   Conference conferenceForScheduling;
 
-  Game[][] Schedule;
+  ArrayList<ArrayList<GameWithDate>> Schedule;
 
   public Schedule(int games, int byes, Conference conf)
   {
     this.numGames = games;
     this.numByes = byes;
     this.conferenceForScheduling = conf;
+    
+    this.Schedule = new ArrayList<ArrayList<GameWithDate>>(this.numGames);
   }
 
   public void generateSchedule()
