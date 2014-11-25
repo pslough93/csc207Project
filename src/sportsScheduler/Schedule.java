@@ -14,14 +14,14 @@ public class Schedule
   Conference conferenceForScheduling;
 
   //ArrayList<ArrayList<Game>> Schedule;
-  Game[][] Schedule;
+  GameWithMileage[][] Schedule;
   public Schedule(int games, int byes, Conference conf)
   {
     this.numGames = games;
     this.numByes = byes;
     this.conferenceForScheduling = conf;
     
-    this.Schedule = new Game[this.numGames][this.conferenceForScheduling.teams.length];
+    this.Schedule = new GameWithMileage[this.numGames][this.conferenceForScheduling.teams.length/2];
   }
 
   public void generateSchedule() throws Exception
@@ -53,85 +53,16 @@ public class Schedule
     //this.setByes();
     
     //Random rand = new Random();
-    
-    int[] currentIndex = new int[numGames];
-    
-    for(int a = 0; a < numGames; a++){
-      currentIndex[a] = 0;
-    }
-        
-    for(int i = 0; i < this.conferenceForScheduling.teams.length; i++){
-      
-      Team tm = this.conferenceForScheduling.teams[i];
-      
-      System.out.println(tm.toString());
-      for(int j = 0; j < tm.restrictions.length; j++){
-        
-        if(tm.restrictions[j] == 5){
-          Game gm = new Game(tm, tm);
-          System.out.println(gm.toString());
-         
-          Schedule[j][currentIndex[j]++] = gm;
-          conferenceForScheduling.gamesList.remove(gm);
-          
-          tm.byes.remove(gm);
-        }
-        
-        Team[] teams = this.conferenceForScheduling.teams;
-        
-        for(Date dt: this.conferenceForScheduling.datesOfCompetition){
-          
-          
-          
-          
-        }
-        
-        
-        
-        
-//        if(tm.restrictions[j] == 0){
-//          if(tm.farAwayGames.size() != 0){
-//            Game gm = tm.farAwayGames.get(rand.nextInt(tm.farAwayGames.size()));
-//            Team opponent = gm.homeTeam;
-//            
-//            Schedule[j][currentIndex[j]++] = gm;
-//            
-//            conferenceForScheduling.gamesList.remove(gm);
-//            
-//            tm.farAwayGames.remove(gm);
-//            
-//            opponent.homeGames.remove(new Game(opponent, tm));
-//          }
-//          
-//          
-//        }
-        
-//        if(tm.restrictions[j] == 2){
-//          if(tm.farAwayGames.size() != 0){
-//            Game gm = tm.farAwayGames.get(rand.nextInt(tm.farAwayGames.size()));
-//            Team opponent = gm.homeTeam;
-//            
-//            Schedule[j][currentIndex[j]++] = gm;
-//            
-//            conferenceForScheduling.gamesList.remove(gm);
-//            
-//            tm.farAwayGames.remove(gm);
-//            
-//            opponent.homeGames.remove(new Game(opponent, tm));
-//          }
-//          
-//          
-//        }
-      }
-      
-    }
-    System.out.println("here");
+    int[] teams = {0, 5, 7, 4, 6, 1, 2, 3, 8, 9};
+    this.Schedule = makeDummySchedule(teams);
+  
 
   }
 
   public void printSchedule()
   {
-    for(int i = 0; i < numGames; i++){
+    System.out.println(this.numGames);
+    for(int i = 0; i < this.numGames; i++){
       System.out.print(this.conferenceForScheduling.datesOfCompetition[i].toString() + " - ");
       for(int j = 0; j < this.Schedule[i].length; j++){
         if(this.Schedule[i][j] != null){
@@ -253,41 +184,37 @@ public class Schedule
     return true;
   }
   
-  public void makeDummySchedule(){
+  public GameWithMileage[][] makeDummySchedule(int[] teamNums){
     
     
     int numTeams = this.conferenceForScheduling.teams.length;
-    
-    int[] roundRobin = new int[numTeams];
+   
+    GameWithMileage[][] schedule = new GameWithMileage[this.numGames][numTeams/2];
     
     int[] currentIndex = new int[numGames];
     
     for(int a = 0; a < numGames; a++){
       currentIndex[a] = 0;
-    }
-    
-    for(int i = 0; i < numTeams; i++){
-      roundRobin[i] = i;
-    }
+    }//for
     
     int index = numTeams - 1;
-    for(int i = 1; i < numGames/2 + 1; i++){
-      for(int j = 0; j < index; j++){
-        Game gm1 = new Game(this.conferenceForScheduling.teams[roundRobin[j]], this.conferenceForScheduling.teams[roundRobin[index - j]]);
-        Game gm2 = new Game(this.conferenceForScheduling.teams[roundRobin[index - j]], this.conferenceForScheduling.teams[roundRobin[j]]);
+    for(int i = 0; i < numGames/2; i++){
+      for(int j = 0; j < numTeams/2; j++){
+        GameWithMileage gm1 = new GameWithMileage(this.conferenceForScheduling.teams[teamNums[j]], this.conferenceForScheduling.teams[teamNums[index - j]], this.conferenceForScheduling.mileage[teamNums[j]][teamNums[index - j]]);
+        GameWithMileage gm2 = new GameWithMileage(this.conferenceForScheduling.teams[teamNums[index - j]], this.conferenceForScheduling.teams[teamNums[j]], this.conferenceForScheduling.mileage[teamNums[index - j]][teamNums[j]]);
         
-        this.Schedule[i][currentIndex[i]++] = gm1;
-        this.Schedule[i + numGames/2][currentIndex[i + numGames/2]++] = gm2;
-      }
+        schedule[i][currentIndex[i]++] = gm1;
+        schedule[i + numGames/2][currentIndex[i + numGames/2]++] = gm2;
+      }//for
       
-      for(int k = 1; k < numTeams; k++){
-        if(roundRobin[k] == 1)
-          roundRobin[k] = 9;
-        else{
-          roundRobin[k]--;
-        }
-      }
-    }
-  }
-
+      int a = teamNums[numTeams - 1];
+      for(int k = numTeams - 1; k > 1; k--)
+      {
+          teamNums[k] = teamNums[k - 1];
+      }//for
+      teamNums[1] = a;
+    }//for
+    
+    return schedule;
+  }//makeDummySchedule(int[])
 }
