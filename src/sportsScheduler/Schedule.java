@@ -1,6 +1,7 @@
 package sportsScheduler;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 public class Schedule
@@ -12,18 +13,18 @@ public class Schedule
 
   Conference conferenceForScheduling;
 
-  ArrayList<ArrayList<GameWithDate>> Schedule;
-
+  //ArrayList<ArrayList<Game>> Schedule;
+  Game[][] Schedule;
   public Schedule(int games, int byes, Conference conf)
   {
     this.numGames = games;
     this.numByes = byes;
     this.conferenceForScheduling = conf;
     
-    this.Schedule = new ArrayList<ArrayList<GameWithDate>>(this.numGames);
+    this.Schedule = new Game[this.numGames][this.conferenceForScheduling.teams.length];
   }
 
-  public void generateSchedule()
+  public void generateSchedule() throws Exception
   {
     //algorithm to generate schedules
 
@@ -48,13 +49,97 @@ public class Schedule
      *    This again gets repeated for the number of dates d and the number of tries t.
      *    So the "running time" will be O(t*d*n^2), or O(n^2), but with a very big coefficient. 
      */
+    
+    //this.setByes();
+    
+    //Random rand = new Random();
+    
+    int[] currentIndex = new int[numGames];
+    
+    for(int a = 0; a < numGames; a++){
+      currentIndex[a] = 0;
+    }
+        
+    for(int i = 0; i < this.conferenceForScheduling.teams.length; i++){
+      
+      Team tm = this.conferenceForScheduling.teams[i];
+      
+      System.out.println(tm.toString());
+      for(int j = 0; j < tm.restrictions.length; j++){
+        
+        if(tm.restrictions[j] == 5){
+          Game gm = new Game(tm, tm);
+          System.out.println(gm.toString());
+         
+          Schedule[j][currentIndex[j]++] = gm;
+          conferenceForScheduling.gamesList.remove(gm);
+          
+          tm.byes.remove(gm);
+        }
+        
+        Team[] teams = this.conferenceForScheduling.teams;
+        
+        for(Date dt: this.conferenceForScheduling.datesOfCompetition){
+          
+          
+          
+          
+        }
+        
+        
+        
+        
+//        if(tm.restrictions[j] == 0){
+//          if(tm.farAwayGames.size() != 0){
+//            Game gm = tm.farAwayGames.get(rand.nextInt(tm.farAwayGames.size()));
+//            Team opponent = gm.homeTeam;
+//            
+//            Schedule[j][currentIndex[j]++] = gm;
+//            
+//            conferenceForScheduling.gamesList.remove(gm);
+//            
+//            tm.farAwayGames.remove(gm);
+//            
+//            opponent.homeGames.remove(new Game(opponent, tm));
+//          }
+//          
+//          
+//        }
+        
+//        if(tm.restrictions[j] == 2){
+//          if(tm.farAwayGames.size() != 0){
+//            Game gm = tm.farAwayGames.get(rand.nextInt(tm.farAwayGames.size()));
+//            Team opponent = gm.homeTeam;
+//            
+//            Schedule[j][currentIndex[j]++] = gm;
+//            
+//            conferenceForScheduling.gamesList.remove(gm);
+//            
+//            tm.farAwayGames.remove(gm);
+//            
+//            opponent.homeGames.remove(new Game(opponent, tm));
+//          }
+//          
+//          
+//        }
+      }
+      
+    }
+    System.out.println("here");
+
   }
 
-  public String scheduleToString()
+  public void printSchedule()
   {
-    //makes schedule into a string
-    String s1 = "not implemented";
-    return s1;
+    for(int i = 0; i < numGames; i++){
+      System.out.print(this.conferenceForScheduling.datesOfCompetition[i].toString() + " - ");
+      for(int j = 0; j < this.Schedule[i].length; j++){
+        if(this.Schedule[i][j] != null){
+          System.out.print(this.Schedule[i][j].toString() + " - ");
+        }
+      }
+      System.out.println();
+    }
   }
 
   public boolean[] verifyByes()
@@ -166,6 +251,43 @@ public class Schedule
           }
       }
     return true;
+  }
+  
+  public void makeDummySchedule(){
+    
+    
+    int numTeams = this.conferenceForScheduling.teams.length;
+    
+    int[] roundRobin = new int[numTeams];
+    
+    int[] currentIndex = new int[numGames];
+    
+    for(int a = 0; a < numGames; a++){
+      currentIndex[a] = 0;
+    }
+    
+    for(int i = 0; i < numTeams; i++){
+      roundRobin[i] = i;
+    }
+    
+    int index = numTeams - 1;
+    for(int i = 1; i < numGames/2 + 1; i++){
+      for(int j = 0; j < index; j++){
+        Game gm1 = new Game(this.conferenceForScheduling.teams[roundRobin[j]], this.conferenceForScheduling.teams[roundRobin[index - j]]);
+        Game gm2 = new Game(this.conferenceForScheduling.teams[roundRobin[index - j]], this.conferenceForScheduling.teams[roundRobin[j]]);
+        
+        this.Schedule[i][currentIndex[i]++] = gm1;
+        this.Schedule[i + numGames/2][currentIndex[i + numGames/2]++] = gm2;
+      }
+      
+      for(int k = 1; k < numTeams; k++){
+        if(roundRobin[k] == 1)
+          roundRobin[k] = 9;
+        else{
+          roundRobin[k]--;
+        }
+      }
+    }
   }
 
 }

@@ -34,8 +34,12 @@ public class Expt
     
     Schedule mwcSchedule = new Schedule(19, 1, mwc);
     
-    mwcSchedule.setByes();
+    mwcSchedule.makeDummySchedule();
     
+    mwcSchedule.printSchedule();
+    
+    //mwcSchedule.setByes();
+    /*
     for(int i = 0; i < mwc.teams.length; i++){
       System.out.println(mwc.teams[i].toString());
       for(int j = 0; j < mwc.teams[i].restrictions.length; j++){
@@ -43,6 +47,7 @@ public class Expt
       }
       System.out.println();
     }
+    */
     /*
     GameWithMileage game = new GameWithMileage(mwc.teams[0], mwc.teams[0], mwc.mileage[0][0]);
     
