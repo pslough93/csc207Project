@@ -15,18 +15,18 @@ public class Game
   {
     this.homeTeam = home;
     this.awayTeam = away;
-  }
+  }//Game(Team, Team)
 
   public String toString()
   {
     if (this.homeTeam.equals(this.awayTeam))
       {
         return this.homeTeam.name + " - BYE";
-      }
+      }//if
     else
       {
         String returnString = this.awayTeam.name + " at " + this.homeTeam.name;
         return returnString;
-      }
-  }
-}
+      }//else
+  }//toString()
+}//class Game.java

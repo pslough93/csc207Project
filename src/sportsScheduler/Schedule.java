@@ -1,220 +1,261 @@
 package sportsScheduler;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 
 public class Schedule
 {
-
+  //counts of games, teams and violations
   int numGames;
-
-  int numByes;
+  int numTeams;
+  int travelViolations;
 
   Conference conferenceForScheduling;
 
-  //ArrayList<ArrayList<Game>> Schedule;
   GameWithMileage[][] Schedule;
-  public Schedule(int games, int byes, Conference conf)
+
+  /**
+   * Constructor for Schedule. Initializes schedule for use;
+   * @param games
+   * @param conf
+   */
+  public Schedule(int games, Conference conf)
   {
     this.numGames = games;
-    this.numByes = byes;
     this.conferenceForScheduling = conf;
-    
-    this.Schedule = new GameWithMileage[this.numGames][this.conferenceForScheduling.teams.length/2];
-  }
+    this.numTeams = this.conferenceForScheduling.teams.length;
+    this.Schedule =
+        new GameWithMileage[this.numGames][this.conferenceForScheduling.teams.length / 2];
+    this.travelViolations = 0;
+  }//Schedule(int, Conference)
 
-  public void generateSchedule() throws Exception
-  {
-    //algorithm to generate schedules
-
-    /*
-     * Possible Outline:
-     * 
-     * while count of tries < maxTries
-     *    for each date in dates of competition{
-     * 	  	find team with highest priority restriction on date
-     * 	  		schedule game for them by randomly selecting game from their gameList
-     * 			remove game from team arrayList
-     * 			remove game from conference arrayList
-     * 			put new game on schedule
-     *              find next team with highest priority restriction on date and repeat
-     *    tries++
-     *
-     * if we find that all arrayLists are empty, it means we are done.
-     * 
-     * (Approximate) Asymptotic Analysis:
-     *    Within the "find team with..." block, all accessing and removing from arraylists will be O(n).
-     *    This will be repeated for half of the number of Teams, so the algorithm will be O(n^2). 
-     *    This again gets repeated for the number of dates d and the number of tries t.
-     *    So the "running time" will be O(t*d*n^2), or O(n^2), but with a very big coefficient. 
-     */
-    
-    //this.setByes();
-    
-    //Random rand = new Random();
-    int[] teams = {0, 5, 7, 4, 6, 1, 2, 3, 8, 9};
-    this.Schedule = makeDummySchedule(teams);
   
-
-  }
-
-  public void printSchedule()
-  {
-    System.out.println(this.numGames);
-    for(int i = 0; i < this.numGames; i++){
-      System.out.print(this.conferenceForScheduling.datesOfCompetition[i].toString() + " - ");
-      for(int j = 0; j < this.Schedule[i].length; j++){
-        if(this.Schedule[i][j] != null){
-          System.out.print(this.Schedule[i][j].toString() + " - ");
-        }
-      }
-      System.out.println();
-    }
-  }
-
-  public boolean[] verifyByes()
-  {
-    int numTeams = this.conferenceForScheduling.teams.length;
-    boolean[] validByes = new boolean[numTeams];
-
-    for (int i = 0; i < numTeams; i++)
-      {
-        Team currentTeam = this.conferenceForScheduling.teams[i];
-        int byes = 0;
-
-        for (int j = 0; j < currentTeam.restrictions.length; j++)
-          {
-            if (currentTeam.restrictions[j] == 5)
-              byes++;
-          }
-
-        if (byes == this.numByes)
-          {
-            validByes[i] = true;
-          }
-        else
-          {
-            validByes[i] = false;
-          }
-      }
-
-    return validByes;
-  }
-
-  public void setByes()
+  /**
+   * Primary Scheduling algorithm: 
+   *    Primarily uses the Round Robin scheduling algorithm (adapted from http://en.wikipedia.org/wiki/Round-robin_tournament#Scheduling_algorithm)
+   *    First, we vary the input to makeDRRSchedule() to vary the initial round in a double round robin tournament. Then we go through and randomize
+   *    the "rows" of the schedule (ie. randomly swapping weeks). Then, we go through and count the number of times the schedule requires more
+   *    travel than should be necessary for a given team on a given day. If this algorithm features fewer violations, it is saved as the current
+   *    best schedule and the process repeats. This Algorithm should be O(n^2), as no piece of the algorithm features anything that depends on more
+   *    than n^2 where n is the number of teams.
+   *    
+   * @throws Exception
+   */
+  public void generateSchedule()
     throws Exception
   {
-    boolean[] byes = this.verifyByes();
-    int numTeams = this.conferenceForScheduling.teams.length;
-    for (int i = 0; i < this.numGames; i++)
-      {
-        int byesCount = 0;
-
-        Team tempTeam = this.conferenceForScheduling.teams[0];
-
-        for (int j = 0; j < numTeams; j++)
-          {
-            if (this.conferenceForScheduling.teams[j].restrictions[i] == 5)
-              byesCount++;
-
-            if (this.conferenceForScheduling.teams[j].restrictions[i] < tempTeam.restrictions[i])
-              {
-                tempTeam = this.conferenceForScheduling.teams[j];
-              }
-          }
-
-        if (byesCount % 2 != 0)
-          {
-            if (tempTeam.restrictions[i] <= 1)
-              {
-                tempTeam.restrictions[i] = 5;
-                byes = this.verifyByes();
-              }
-            else
-              {
-                throw new Exception("Schedule is impossible");
-              }
-          }
-      }
-
-    for (int a = 0; a < numTeams; a++)
-      {
-        System.out.print(byes[a] + " ");
-      }
-    System.out.println();
+    
+    //intializes violation counts and schedules
+    
+    int lowViolationCount = numTeams * numTeams;
+    int violationCount;
+    GameWithMileage[][] currentSchedule =
+        new GameWithMileage[this.numGames][this.numTeams];
+    GameWithMileage[][] bestSchedule =
+        new GameWithMileage[this.numGames][this.numTeams];
+    
+    //initializes team input array.
+    int[] teams = { 0, 5, 7, 4, 6, 1, 2, 3, 8, 9 };
+    int tries = 0;
 
     Random rand = new Random();
-    int randomNumDate;
-    while (!allTrueByes(byes))
-      {
-        randomNumDate =
-            Math.abs(rand.nextInt()
-                     % this.conferenceForScheduling.datesOfCompetition.length);
 
-        int restrictionCount = 0;
-        for(Team tm : this.conferenceForScheduling.teams){
-          restrictionCount += tm.restrictions[randomNumDate];
-        }
-        
-        
-        if(restrictionCount <= numTeams){
-          int byeCount = 0;
-          for(int k = 0; k < numTeams; k++){
-            if(byeCount < 2 && !byes[k]){
-              this.conferenceForScheduling.teams[k].restrictions[randomNumDate] = 5;
-              byeCount++;
-            }
-          }
-        }
-        
-        byes = this.verifyByes();
-      }
-  }
-
-  public boolean allTrueByes(boolean[] tf)
-  {
-    for (boolean i : tf)
+    //while we are under the maximum number of tries and have more than 0 violations
+    while (tries < 100 && lowViolationCount > 0)
       {
-        if (!i)
+
+        //permute last 5 elements of input array
+        for (int i = 0; i < 4; i++)
           {
-            return false;
-          }
-      }
-    return true;
-  }
-  
-  public GameWithMileage[][] makeDummySchedule(int[] teamNums){
-    
-    
-    int numTeams = this.conferenceForScheduling.teams.length;
-   
-    GameWithMileage[][] schedule = new GameWithMileage[this.numGames][numTeams/2];
-    
-    int[] currentIndex = new int[numGames];
-    
-    for(int a = 0; a < numGames; a++){
-      currentIndex[a] = 0;
-    }//for
-    
-    int index = numTeams - 1;
-    for(int i = 0; i < numGames/2; i++){
-      for(int j = 0; j < numTeams/2; j++){
-        GameWithMileage gm1 = new GameWithMileage(this.conferenceForScheduling.teams[teamNums[j]], this.conferenceForScheduling.teams[teamNums[index - j]], this.conferenceForScheduling.mileage[teamNums[j]][teamNums[index - j]]);
-        GameWithMileage gm2 = new GameWithMileage(this.conferenceForScheduling.teams[teamNums[index - j]], this.conferenceForScheduling.teams[teamNums[j]], this.conferenceForScheduling.mileage[teamNums[index - j]][teamNums[j]]);
+            //two random ints in range
+            int i1 = rand.nextInt(5) + 5;
+            int i2 = rand.nextInt(5) + 5;
+            
+            //swap
+            int tmp = teams[i1];
+            teams[i1] = teams[i2];
+            teams[i2] = tmp;
+          }//for
+
+        //possibly permute first 3 elements of imput array
+        if (rand.nextBoolean())
+          {
+            int i1 = rand.nextInt(3);
+            int i2 = rand.nextInt(3);
+
+            int tmp = teams[i1];
+            teams[i1] = teams[i2];
+            teams[i2] = tmp;
+          }//if
         
-        schedule[i][currentIndex[i]++] = gm1;
-        schedule[i + numGames/2][currentIndex[i + numGames/2]++] = gm2;
-      }//for
-      
-      int a = teamNums[numTeams - 1];
-      for(int k = numTeams - 1; k > 1; k--)
+        //possibly permute 4th and 5th elements of input array
+        if (rand.nextBoolean())
+          {
+            int i1 = rand.nextInt(2) + 3;
+            int i2 = rand.nextInt(2) + 3;
+
+            int tmp = teams[i1];
+            teams[i1] = teams[i2];
+            teams[i2] = tmp;
+          }//if
+
+        //Make a DRR Schedule with the input array
+        currentSchedule = makeDRRSchedule(teams);
+        
+        //count violations
+        violationCount = countViolations(currentSchedule);
+
+        //if this schedule is better than the best yet, reassigne lowViolationCount and bestSchedule
+        if (violationCount < lowViolationCount)
+          {
+            lowViolationCount = violationCount;
+            bestSchedule = currentSchedule;
+          }//if
+        
+        //repeat 20 times
+        for (int k = 0; k < 20; k++)
+          {
+            //fifty times
+            for (int i = 0; i < 50; i++)
+              {
+                //select two rows of schedule(not including first) and swap
+                int i1 = rand.nextInt(17) + 1;
+                int i2 = rand.nextInt(17) + 1;
+
+                GameWithMileage[] tmp = currentSchedule[i1];
+                currentSchedule[i1] = currentSchedule[i2];
+                currentSchedule[i2] = tmp;
+              }//for
+            //update violation count;
+            violationCount = countViolations(currentSchedule);
+            
+            //if this schedule is the best, update
+            if (violationCount < lowViolationCount)
+              {
+                lowViolationCount = violationCount;
+                bestSchedule = currentSchedule;
+              }//if
+          }//for
+        //increment number of tries
+        tries++;
+      }//while
+
+    //assign best schedule to class variable
+    this.Schedule = bestSchedule;
+    this.travelViolations = lowViolationCount;
+  }
+
+  /**
+   * Uses pen to print the schedule that has been generated.
+   * @param pen
+   */
+  public void printSchedule(PrintWriter pen)
+  {
+    for (int i = 0; i < this.numGames; i++)
       {
-          teamNums[k] = teamNums[k - 1];
+        if (this.conferenceForScheduling.datesOfCompetition[i].equals(new Date("11/22/14")))
+          {
+            pen.println("11/22/14 or 12/10/14 (School Exam Schedules Permitting) - ");
+          }//if
+        else
+          {
+            pen.println(this.conferenceForScheduling.datesOfCompetition[i].toString()
+                               + " - ");
+          }//else
+        for (int j = 0; j < this.Schedule[i].length; j++)
+          {
+            if (this.Schedule[i][j] != null)
+              {
+                pen.println("\t - " + this.Schedule[i][j].toString());
+              }//if
+          }//for
+        pen.println();
       }//for
-      teamNums[1] = a;
-    }//for
-    
+    pen.println("This Schedule Contains " + this.travelViolations + " instances where excess travel is needed");
+  }//printSchedule(PrintWriter)
+
+  /**
+   * Makes a Double Round Robin Schedule based on the algorithm from http://en.wikipedia.org/wiki/Round-robin_tournament#Scheduling_algorithm.
+   * @param teamNums
+   * @return
+   */
+  public GameWithMileage[][] makeDRRSchedule(int[] teamNums)
+  {
+    //initialize game array
+    GameWithMileage[][] schedule =
+        new GameWithMileage[this.numGames][this.numTeams / 2];
+
+    //Stores the current index that should be used to put a game in the game array
+    int[] currentIndex = new int[numGames];
+
+    for (int a = 0; a < numGames; a++)
+      {
+        currentIndex[a] = 0;
+      }//for
+
+    int index = this.numTeams - 1;
+    for (int i = 0; i < numGames / 2; i++)
+      {
+        for (int j = 0; j < this.numTeams / 2; j++)
+          {
+            //make game with team 1 home, team 2 away
+            GameWithMileage gm1 =
+                new GameWithMileage(
+                                    this.conferenceForScheduling.teams[teamNums[j]],
+                                    this.conferenceForScheduling.teams[teamNums[index
+                                                                                - j]],
+                                    this.conferenceForScheduling.mileage[teamNums[j]][teamNums[index
+                                                                                               - j]]);
+            //make game with team 1 away, team 2 home
+            GameWithMileage gm2 =
+                new GameWithMileage(
+                                    this.conferenceForScheduling.teams[teamNums[index
+                                                                                - j]],
+                                    this.conferenceForScheduling.teams[teamNums[j]],
+                                    this.conferenceForScheduling.mileage[teamNums[index
+                                                                                  - j]][teamNums[j]]);
+            
+            //put both in the schedule
+            schedule[i][currentIndex[i]++] = gm1;
+            schedule[i + numGames / 2][currentIndex[i + numGames / 2]++] = gm2;
+          }//for
+        
+        //As per RR scheduling algorithm, we have a pivot (element 0), so we cycle the rest of the array
+        //n-1 times to create all permutations
+        int a = teamNums[this.numTeams - 1];
+        for (int k = this.numTeams - 1; k > 1; k--)
+          {
+            teamNums[k] = teamNums[k - 1];
+          }//for
+        teamNums[1] = a;
+      }//for
+
     return schedule;
   }//makeDummySchedule(int[])
-}
+
+  /**
+   * Counts the number of travel violations caused by a schedule
+   * @param sched
+   * @return
+   */
+  public int countViolations(GameWithMileage[][] sched)
+  {
+    int count = 0;
+    //for all dates
+    for (int i = 0; i < this.numGames; i++)
+      {
+        //for all games
+        for (int j = 0; j < this.numTeams / 2; j++)
+          {
+            //if away team should be playing close but isnt, increment count
+            if (sched[i][j].awayTeam.restrictions[i] == 1
+                && sched[i][j].mileage > 270)
+              count++;
+          }//for
+      }//for
+    return count;
+  }//countViolations(GameWithMileage[][])
+}//class Schedule.java
