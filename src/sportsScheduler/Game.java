@@ -16,6 +16,14 @@ public class Game
     this.homeTeam = home;
     this.awayTeam = away;
   }//Game(Team, Team)
+  
+  @Override
+  public boolean equals(Object obj)
+  {
+    Game gm = (Game)obj;
+    
+    return (this.homeTeam.equals(gm.homeTeam)) && (this.awayTeam.equals(gm.awayTeam));
+  }//equals
 
   public String toString()
   {

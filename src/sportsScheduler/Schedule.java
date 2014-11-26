@@ -32,7 +32,6 @@ public class Schedule
     this.travelViolations = 0;
   }//Schedule(int, Conference)
 
-  
   /**
    * Primary Scheduling algorithm: 
    *    Primarily uses the Round Robin scheduling algorithm (adapted from http://en.wikipedia.org/wiki/Round-robin_tournament#Scheduling_algorithm)
@@ -47,16 +46,18 @@ public class Schedule
   public void generateSchedule()
     throws Exception
   {
-    
+
     //intializes violation counts and schedules
-    
+
+    ArrayList<GameWithMileage[][]> possibleSchedules =
+        new ArrayList<GameWithMileage[][]>();
     int lowViolationCount = numTeams * numTeams;
     int violationCount;
     GameWithMileage[][] currentSchedule =
         new GameWithMileage[this.numGames][this.numTeams];
     GameWithMileage[][] bestSchedule =
         new GameWithMileage[this.numGames][this.numTeams];
-    
+
     //initializes team input array.
     int[] teams = { 0, 5, 7, 4, 6, 1, 2, 3, 8, 9 };
     int tries = 0;
@@ -64,7 +65,7 @@ public class Schedule
     Random rand = new Random();
 
     //while we are under the maximum number of tries and have more than 0 violations
-    while (tries < 100 && lowViolationCount > 0)
+    while (tries < 1000 && lowViolationCount > 0)
       {
 
         //permute last 5 elements of input array
@@ -73,7 +74,7 @@ public class Schedule
             //two random ints in range
             int i1 = rand.nextInt(5) + 5;
             int i2 = rand.nextInt(5) + 5;
-            
+
             //swap
             int tmp = teams[i1];
             teams[i1] = teams[i2];
@@ -90,7 +91,7 @@ public class Schedule
             teams[i1] = teams[i2];
             teams[i2] = tmp;
           }//if
-        
+
         //possibly permute 4th and 5th elements of input array
         if (rand.nextBoolean())
           {
@@ -104,7 +105,7 @@ public class Schedule
 
         //Make a DRR Schedule with the input array
         currentSchedule = makeDRRSchedule(teams);
-        
+
         //count violations
         violationCount = countViolations(currentSchedule);
 
@@ -114,7 +115,7 @@ public class Schedule
             lowViolationCount = violationCount;
             bestSchedule = currentSchedule;
           }//if
-        
+
         //repeat 20 times
         for (int k = 0; k < 20; k++)
           {
@@ -131,21 +132,57 @@ public class Schedule
               }//for
             //update violation count;
             violationCount = countViolations(currentSchedule);
-            
+
             //if this schedule is the best, update
             if (violationCount < lowViolationCount)
               {
+                possibleSchedules.clear();
                 lowViolationCount = violationCount;
                 bestSchedule = currentSchedule;
+                possibleSchedules.add(bestSchedule);
               }//if
+            else if (violationCount == lowViolationCount)
+              {
+                boolean checkAll = true;
+
+                for (GameWithMileage[][] gme : possibleSchedules)
+                  {
+                    if (currentSchedule.equals(gme))
+                      checkAll = false;
+                  }
+                if (checkAll)
+                  possibleSchedules.add(currentSchedule);
+              }//else if
           }//for
         //increment number of tries
         tries++;
       }//while
 
+    //Check multiple schedules
+//    for (GameWithMileage[][] gm : possibleSchedules){
+//      PrintWriter pen = new PrintWriter(System.out, true);
+//      this.Schedule = gm;
+//      printSchedule(pen);
+//    }
+    
     //assign best schedule to class variable
     this.Schedule = bestSchedule;
     this.travelViolations = lowViolationCount;
+  }
+
+  public boolean checkasdfhfh(ArrayList<GameWithMileage[][]> arrayList,
+                              GameWithMileage[][] current)
+  {
+
+    for (GameWithMileage[][] gme : arrayList)
+      {
+
+        if (gme.equals(current))
+          return false;
+
+      }
+    return true;
+
   }
 
   /**
@@ -156,14 +193,15 @@ public class Schedule
   {
     for (int i = 0; i < this.numGames; i++)
       {
-        if (this.conferenceForScheduling.datesOfCompetition[i].equals(new Date("11/22/14")))
+        if (this.conferenceForScheduling.datesOfCompetition[i].equals(new Date(
+                                                                               "11/22/14")))
           {
             pen.println("11/22/14 or 12/10/14 (School Exam Schedules Permitting) - ");
           }//if
         else
           {
             pen.println(this.conferenceForScheduling.datesOfCompetition[i].toString()
-                               + " - ");
+                        + " - ");
           }//else
         for (int j = 0; j < this.Schedule[i].length; j++)
           {
@@ -174,7 +212,8 @@ public class Schedule
           }//for
         pen.println();
       }//for
-    pen.println("This Schedule Contains " + this.travelViolations + " instances where excess travel is needed");
+    pen.println("This Schedule Contains " + this.travelViolations
+                + " instances where excess travel is needed");
   }//printSchedule(PrintWriter)
 
   /**
@@ -217,12 +256,12 @@ public class Schedule
                                     this.conferenceForScheduling.teams[teamNums[j]],
                                     this.conferenceForScheduling.mileage[teamNums[index
                                                                                   - j]][teamNums[j]]);
-            
+
             //put both in the schedule
             schedule[i][currentIndex[i]++] = gm1;
             schedule[i + numGames / 2][currentIndex[i + numGames / 2]++] = gm2;
           }//for
-        
+
         //As per RR scheduling algorithm, we have a pivot (element 0), so we cycle the rest of the array
         //n-1 times to create all permutations
         int a = teamNums[this.numTeams - 1];
@@ -235,6 +274,22 @@ public class Schedule
 
     return schedule;
   }//makeDummySchedule(int[])
+
+  @Override
+  public boolean equals(Object obj)
+  {
+    Schedule sch = (Schedule) obj;
+
+    for (int i = 0; i < this.numGames; i++)
+      {
+        for (int j = 0; j < this.Schedule[i].length; j++)
+          {
+            if (!this.Schedule[i][j].equals(sch.Schedule[i][j]))
+              return false;
+          }
+      }
+    return true;
+  }//equals
 
   /**
    * Counts the number of travel violations caused by a schedule

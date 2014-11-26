@@ -62,6 +62,14 @@ public class Team
     //set restrictions if not initialized in constructor
     this.restrictions = restrict;
   }//setRestrictions(int[])
+  
+  @Override
+  public boolean equals(Object obj)
+  {
+    Team tm = (Team)obj;
+    
+    return (this.name.equals(tm.name));
+  }//equals
 
 
   public String toString()
