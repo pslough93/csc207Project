@@ -12,6 +12,7 @@ public class Schedule
   int numGames;
   int numTeams;
   int travelViolations;
+  ArrayList<GameWithMileage[][]> possibleSchedules;
 
   Conference conferenceForScheduling;
 
@@ -27,6 +28,7 @@ public class Schedule
     this.numGames = games;
     this.conferenceForScheduling = conf;
     this.numTeams = this.conferenceForScheduling.teams.length;
+    this.possibleSchedules = new ArrayList<GameWithMileage[][]>();
     this.Schedule =
         new GameWithMileage[this.numGames][this.conferenceForScheduling.teams.length / 2];
     this.travelViolations = 0;
@@ -48,9 +50,6 @@ public class Schedule
   {
 
     //intializes violation counts and schedules
-
-    ArrayList<GameWithMileage[][]> possibleSchedules =
-        new ArrayList<GameWithMileage[][]>();
     int lowViolationCount = numTeams * numTeams;
     int violationCount;
     GameWithMileage[][] currentSchedule =
@@ -65,7 +64,7 @@ public class Schedule
     Random rand = new Random();
 
     //while we are under the maximum number of tries and have more than 0 violations
-    while (tries < 1000 && lowViolationCount > 0)
+    while (tries < 10000 && lowViolationCount > 0)
       {
 
         //permute last 5 elements of input array
