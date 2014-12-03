@@ -1,0 +1,17 @@
+Stage 3 Report
+
+- Features:
+  -Our algorithm is very fast, and provides a schedule that should work every time with minimal travel violations.
+  -We have an easy to use JavaSwing GUI (found in program.jar) that lets people easily input files and such.
+  -Our schedule is saved in a text file for easy printing.
+  
+- We chose our license because we decided that our program is good, but not groundbreaking and people should be 
+  free to use our software with citation. If this was a significantly more advanced piece of software, it would
+  require a commercial license, but for now, the MIT license because it is the most free to the user. 
+  
+- We use randomness somewhat cleverly, as we randomize the initial configuration of the teams to have the byes work
+  out as well, and we additionally swap "rows" of the schedule randomly and find a somewhat optimal schedule.
+
+- To extend this next semester we would first work out how to implement the back to back weekends, then we might 
+  abstract the program to work with different types of schedules and sports. We might also try to get rid of some
+  of the randomness by making the random swapping more evaluatative of whether or not a row swap is good or bad. 
